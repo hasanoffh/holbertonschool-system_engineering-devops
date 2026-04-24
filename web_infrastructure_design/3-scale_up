@@ -1,0 +1,23 @@
+# 3. Scale Up Infrastructure
+
+This architecture focuses on high availability and performance by decoupling services and eliminating the Load Balancer as a single point of failure.
+
+## Diagram Link
+https://imgur.com/a/mXGl2ap
+
+## Infrastructure Explanation
+
+### Why additional elements were added:
+* **Load Balancer Cluster:** By adding a second HAProxy and configuring it as a cluster, we eliminate the SPOF. If the active Load Balancer fails, the passive one takes over immediately (Failover).
+* **Decoupled Web Server Tier:** Moving Nginx to dedicated servers allows for better management of HTTP traffic and static assets without using resources needed by the application.
+* **Decoupled Application Server Tier:** Having dedicated application servers allows us to scale computing power (CPU/RAM) specifically for running the codebase (business logic).
+* **Decoupled Database Tier:** Databases require high disk I/O and RAM. Placing them on separate servers ensures that database operations do not interfere with the web or application layers.
+
+### Component Differences
+* **Web Server:** Responsible for handling HTTP/HTTPS requests and serving static content. It directs dynamic requests to the application server.
+* **Application Server:** Responsible for executing the application code, processing logic, and communicating with the database cluster to generate dynamic content.
+
+## Key Benefits
+1. **Redundancy:** The Load Balancer cluster ensures the entry point of the network is always available.
+2. **Resource Optimization:** Each server is tuned for its specific task (Web, App, or Database), preventing resource contention.
+3. **Scalability:** We can now scale horizontally by adding more servers to any specific tier (e.g., adding more App servers during high traffic) without affecting the others.
