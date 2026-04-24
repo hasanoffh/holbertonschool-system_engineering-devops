@@ -1,0 +1,35 @@
+# 0. Simple Web Stack Design
+
+This infrastructure represents a basic one-server setup (LAMP stack) to host the website reachable via www.foobar.com.
+
+## Diagram Link
+https://imgur.com/a/IFyMLG8
+
+---
+
+## Infrastructure Explanation
+
+### 1. The Components and Their Roles
+* **Server:** A physical or virtual machine that hosts the web application and provides the necessary resources (CPU, RAM, storage) for it to run.
+* **Domain Name:** A human-readable address (`foobar.com`) that points to a specific IP address on the internet, making it easier for users to find the website.
+* **DNS 'www' Record:** In this setup, `www` is an **A record** (Address record) that maps the subdomain `www.foobar.com` to the server's public IP address: `8.8.8.8`.
+* **Web Server (Nginx):** A software program that manages HTTP requests. It accepts requests from clients, serves static content, and forwards dynamic requests to the application server.
+* **Application Server:** A service that executes the application's logic (your code). it processes the request, interacts with the database, and returns the result to the web server.
+* **Database (MySQL):** A structured data storage system used to store and manage the application's data (e.g., users, posts, settings).
+* **Application Files:** The actual codebase (HTML, CSS, Python/PHP scripts) that defines the website's functionality and appearance.
+
+### 2. Communication Protocol
+The server communicates with the user's computer using the **TCP/IP** protocol suite. Specifically, the data is transmitted over **HTTP** (HyperText Transfer Protocol) or **HTTPS**, which defines how messages are formatted and transmitted between the web browser and the server.
+
+---
+
+## Identified Issues and Limitations
+
+### 1. SPOF (Single Point of Failure)
+This infrastructure has a critical SPOF. Since all components (web server, app server, database) are on one machine, if that server fails (hardware failure or OS crash), the entire website becomes unavailable.
+
+### 2. Downtime during Maintenance
+Any maintenance task, such as deploying new code or updating the web server configuration, often requires restarting services. Since there is only one server, this process will result in downtime where users cannot access the site.
+
+### 3. Scaling Constraints
+This setup is not scalable for high traffic. It can only be scaled **vertically** (adding more RAM/CPU to the same server). If the incoming traffic exceeds the capacity of this single machine, the site will slow down or crash, as there is no way to distribute the load across other servers.
