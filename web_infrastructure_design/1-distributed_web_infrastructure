@@ -1,0 +1,30 @@
+# 1. Distributed Web Infrastructure
+
+This infrastructure expands the simple stack into a distributed one using two servers and a load balancer.
+
+## Diagram Link
+https://imgur.com/a/cIiM57V
+
+## Infrastructure Explanation
+
+### Why additional elements were added:
+* **Load Balancer (HAproxy):** Added to distribute incoming web traffic across multiple servers to prevent bottlenecks and increase redundancy.
+* **Redundant Server:** Adding a second server ensures that if one goes down, the other can continue to serve requests, minimizing downtime.
+
+### Load Balancer Specifics:
+* **Distribution Algorithm:** Configured with **Round Robin**. It rotates requests sequentially between the available servers in the pool, ensuring an even distribution of the workload.
+* **Setup Type:** This is an **Active-Active** setup. 
+    * **Active-Active:** Both servers are processing requests simultaneously.
+    * **Active-Passive:** Only one server handles requests while the other stays idle as a backup, only activating if the primary fails.
+
+### Database Cluster (Primary-Replica):
+* **Mechanism:** All data modification (Write) happens on the **Primary** node, which then replicates the data to the **Replica** node.
+* **Roles:**
+    * **Primary node:** Responsible for all **Write** operations (INSERT, UPDATE, DELETE).
+    * **Replica node:** Responsible for **Read** operations (SELECT), which offloads processing from the Primary node to improve performance.
+
+## Identified Issues
+
+1. **SPOF (Single Point of Failure):** The Load Balancer and the Primary Database remain single points of failure. If either fails, the entire stack's functionality is compromised.
+2. **Security Issues:** There is no **Firewall** to block unauthorized traffic and no **HTTPS** (SSL/TLS) to encrypt data transmission between the user and the server.
+3. **Monitoring:** There is no system in place to monitor the health and performance of the servers (e.g., CPU usage, uptime, logs).
