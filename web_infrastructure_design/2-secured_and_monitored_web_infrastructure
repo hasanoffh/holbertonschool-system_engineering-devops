@@ -1,0 +1,33 @@
+# 2. Secured and Monitored Web Infrastructure
+
+This infrastructure expands on the distributed stack by introducing firewalls, serving traffic over HTTPS, and adding robust monitoring.
+
+## Diagram Link
+https://imgur.com/a/Hh9e4Pn
+
+## Infrastructure Explanation
+
+### Why additional elements were added:
+* **Firewalls (x3):** Added to filter and restrict incoming and outgoing network traffic to only allowed ports, enhancing security.
+* **SSL Certificate:** To encrypt traffic between the user's browser and the load balancer, enabling HTTPS.
+* **Monitoring Clients (x3):** Installed on each server to collect and forward performance metrics and logs to a central monitoring system.
+
+### Firewalls
+* **Purpose:** They act as security barriers, allowing only legitimate traffic through specified ports (e.g., port 443 for HTTPS) while blocking other unauthorized connection attempts.
+
+### HTTPS (HyperText Transfer Protocol Secure)
+* **Purpose:** Ensures data confidentiality and integrity by encrypting the communication channel between the client and the server, protecting against man-in-the-middle attacks.
+
+### Monitoring
+* **Purpose:** Used to observe the health, performance, and uptime of all servers. It helps in proactively identifying issues like high CPU usage or slow database queries.
+* **Data Collection:** Small agent programs (clients) run on each server. They collect data (like CPU usage or Nginx logs) and send it to a central monitoring server (like Grafana/Prometheus).
+* **How to Monitor Web Server QPS (Queries Per Second):** Configure the monitoring agent to read Nginx access logs, count the number of lines added per second, and then send this number as a specific QPS metric to the central dashboard.
+
+## Identified Issues
+
+1. **Issues with SSL Termination at Load Balancer:**
+   * **Problem:** Terminating SSL at the Load Balancer means traffic between the LB and the backend Web Servers is transmitted unencrypted (HTTP). An internal attacker could theoretically intercept this unencrypted data.
+2. **Issues with a Single Database Server for Writes:**
+   * **Problem:** Since only the Primary node can accept Writes, the stack has a single point of failure. If the Primary fails, the application cannot perform crucial operations like saving user data or new posts.
+3. **Issues with Having Monolithic Server Components:**
+   * **Problem:** Hosting the database, web server, and application server on the same machine means they compete for resources. A high load on MySQL (database) can exhaust the CPU, causing Nginx (web server) to become unresponsive, even though Nginx itself may have low load. Separating these concerns across different servers is a better architecture.
